@@ -17,12 +17,30 @@
       touch-action: manipulation;
       user-select: none;
       -webkit-user-select: none;
+      background-color: #f1f5f9;
     }
     .font-num {
       font-family: 'M PLUS Rounded 1c', sans-serif;
     }
 
-    /* 教科書スタイルの上下分数（スラッシュ / は絶対不使用） */
+    /* 途中計算ステップのカスタムスクロールバー（高さ固定・累積スクロール） */
+    .steps-scroll-area {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(99, 102, 241, 0.6) rgba(15, 23, 42, 0.6);
+    }
+    .steps-scroll-area::-webkit-scrollbar {
+      width: 6px;
+    }
+    .steps-scroll-area::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 9999px;
+    }
+    .steps-scroll-area::-webkit-scrollbar-thumb {
+      background: rgba(99, 102, 241, 0.6);
+      border-radius: 9999px;
+    }
+
+    /* 教科書スタイルの上下分数（スラッシュ / は一切不使用） */
     .math-frac {
       display: inline-flex;
       flex-direction: column;
@@ -49,34 +67,14 @@
       display: block;
     }
 
-    /* 途中式スクロール枠のスタイリッシュなスクロールバー */
-    .steps-scroll-area {
-      scrollbar-width: thin;
-      scrollbar-color: rgba(99, 102, 241, 0.6) rgba(15, 23, 42, 0.6);
-    }
-    .steps-scroll-area::-webkit-scrollbar {
-      width: 6px;
-    }
-    .steps-scroll-area::-webkit-scrollbar-track {
-      background: rgba(15, 23, 42, 0.6);
-      border-radius: 9999px;
-    }
-    .steps-scroll-area::-webkit-scrollbar-thumb {
-      background: rgba(99, 102, 241, 0.6);
-      border-radius: 9999px;
-    }
-    .steps-scroll-area::-webkit-scrollbar-thumb:hover {
-      background: rgba(129, 140, 248, 0.9);
-    }
-
-    /* 1文字ごとのポップ出現アニメーション（0.3秒テンポ用） */
+    /* 1文字ずつのポップ出現アニメーション（0.3秒テンポ用） */
     @keyframes char-pop {
       0% {
-        transform: translateY(12px) scale(0.2);
+        transform: translateY(8px) scale(0.4);
         opacity: 0;
       }
-      65% {
-        transform: translateY(-4px) scale(1.18);
+      70% {
+        transform: translateY(-2px) scale(1.18);
         opacity: 1;
       }
       100% {
@@ -91,32 +89,99 @@
       animation: char-pop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
 
-    /* 行のスライドインアニメーション */
-    @keyframes row-enter {
+    /* 行追加アニメーション */
+    @keyframes row-drop {
       0% {
-        transform: translateY(10px);
+        transform: translateY(-6px) scale(0.97);
         opacity: 0;
       }
       100% {
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
         opacity: 1;
       }
     }
-    .anim-row-enter {
-      animation: row-enter 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    .anim-row-drop {
+      animation: row-drop 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* 両辺への同時追加（ハイライト弾み） */
+    @keyframes add-highlight {
+      0% {
+        transform: scale(0.3);
+        opacity: 0;
+      }
+      70% {
+        transform: scale(1.25);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    .anim-add-badge {
+      animation: add-highlight 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    /* 右辺の打ち消し消去（赤線が引かれて消滅） */
+    @keyframes vanish-cancel {
+      0% {
+        text-decoration-line: line-through;
+        text-decoration-color: #f43f5e;
+        text-decoration-thickness: 3px;
+        transform: scale(1);
+        opacity: 1;
+      }
+      40% {
+        text-decoration-line: line-through;
+        text-decoration-color: #f43f5e;
+        text-decoration-thickness: 3px;
+        transform: scale(1.1);
+        opacity: 0.9;
+      }
+      100% {
+        transform: scale(0.1);
+        max-width: 0;
+        opacity: 0;
+        margin: 0;
+        padding: 0;
+        display: none;
+      }
+    }
+    .anim-vanish {
+      animation: vanish-cancel 0.4s ease forwards;
+    }
+
+    /* 分母出現アニメーション */
+    @keyframes bar-grow {
+      0% { transform: scaleX(0); }
+      100% { transform: scaleX(1); }
+    }
+    .anim-bar-grow {
+      animation: bar-grow 0.25s ease-out forwards;
+    }
+
+    /* 左右入れ替えアニメーション */
+    @keyframes swap-flip {
+      0% { transform: rotateY(0deg); opacity: 0.5; }
+      50% { transform: rotateY(90deg); opacity: 0.2; }
+      100% { transform: rotateY(0deg); opacity: 1; }
+    }
+    .anim-swap {
+      animation: swap-flip 0.38s ease-in-out forwards;
     }
 
     /* スロットの弾みアニメーション */
     @keyframes slot-bounce {
       0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.08); }
+      50% { transform: scale(1.1); }
     }
     .anim-bounce {
       animation: slot-bounce 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .btn-press:active {
-      transform: scale(0.94);
+      transform: scale(0.93);
     }
     #graphCanvas {
       touch-action: none;
@@ -159,7 +224,7 @@
       </div>
 
       <!-- Canvas -->
-      <div class="relative w-full aspect-square max-w-[260px] sm:max-w-[285px] bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden cursor-crosshair">
+      <div class="relative w-full aspect-square max-w-[245px] sm:max-w-[270px] bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden cursor-crosshair">
         <canvas id="graphCanvas" class="w-full h-full block"></canvas>
         <div id="dragTooltip" class="absolute pointer-events-none bg-slate-900/95 text-white text-[11px] font-bold font-num px-2 py-1 rounded-md shadow-lg transform -translate-x-1/2 -translate-y-9 opacity-0 transition-opacity">
           (2, 5)
@@ -183,18 +248,18 @@
       </div>
     </div>
 
-    <!-- ② 途中式・解法ステップ表示エリア (中央: 固定枠・累積スクロール・1文字0.3秒) -->
+    <!-- ② 途中式・解法ステップ表示エリア (中央: 固定枠・累積スクロール・等式の性質変形) -->
     <div class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-3.5 sm:p-4 rounded-3xl shadow-md flex flex-col justify-between">
       
       <!-- ステップヘッダー部 -->
       <div class="flex items-center justify-between pb-1.5 border-b border-slate-800">
         <div class="flex items-center gap-2">
           <span id="animStepPill" class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span id="animStepTitle" class="text-xs font-bold text-amber-300">途中計算ステップ (1文字0.3秒おきに出現)</span>
+          <span id="animStepTitle" class="text-xs font-bold text-amber-300">等式の性質による変形ステップ</span>
         </div>
         <div class="flex items-center gap-2">
           <span class="text-[10px] text-indigo-300 bg-indigo-950/80 px-2 py-0.5 rounded border border-indigo-700/60 font-medium hidden sm:inline">
-            📜 上にスクロールで過去の全式を確認可
+            📜 上にスクロールで全式を確認可
           </span>
           <span id="animStatusBadge" class="text-[11px] text-slate-300 bg-slate-800 px-2.5 py-0.5 rounded-full border border-slate-700 font-mono">
             待機中
@@ -212,14 +277,14 @@
         <span class="step-dot w-2 h-2 rounded-full bg-slate-700 transition-colors" data-step="6"></span>
       </div>
 
-      <!-- 過去の式を消さずに下へ累積し、上へ流れるスクロール領域（高さ固定: 約170px） -->
-      <div id="stepsContainer" class="steps-scroll-area my-1.5 h-[165px] sm:h-[172px] overflow-y-auto px-2 py-1 flex flex-col gap-2 rounded-xl bg-slate-950/40 border border-slate-800/80 scroll-smooth">
-        <!-- JSにより新しいステップ行と1文字ずつのスパンがここに次々と append されます -->
+      <!-- 過去の式を消さずに下へ累積し、上へ流れるスクロール領域（高さ固定: 約175px） -->
+      <div id="stepsContainer" class="steps-scroll-area my-1.5 h-[175px] sm:h-[185px] overflow-y-auto px-2 py-1 flex flex-col gap-2 rounded-xl bg-slate-950/50 border border-slate-800/80 scroll-smooth">
+        <!-- JSにより新しいステップ行がここに次々と append されます -->
       </div>
 
       <!-- アドバイス＆現在座標バー -->
       <div class="text-[11px] text-slate-300 pt-1.5 border-t border-slate-800/80 flex items-center justify-between">
-        <span id="coachMessage" class="truncate pr-2">💡 下のキーパッドから代入したい数字を選んでみよう！</span>
+        <span id="coachMessage" class="truncate pr-2">💡 y スロットを選んで数字を代入してみよう！</span>
         <span id="coordBadge" class="text-emerald-300 font-bold font-num whitespace-nowrap">点 (2, 5)</span>
       </div>
     </div>
@@ -298,7 +363,7 @@
         </span>
       </div>
       <div class="text-[11px] text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200">
-        1文字ずつ0.3秒おきに出現！
+        等式の性質アニメーション
       </div>
     </div>
 
@@ -352,18 +417,21 @@
       activeTarget: 'x',  // 'x', 'y', 'a', 'b'
       isNegative: false,
       soundEnabled: true,
-      currentAnimationId: 0 // 連打時の古いアニメーション中断用
+      currentAnimationId: 0
     };
 
-    const CHAR_INTERVAL = 300; // ★要件：1文字・記号・パーツずつ0.3秒おき
-    const LINE_PAUSE = 400;     // 行間の適度な一休み（0.4秒）
+    // タイミング定数
+    const CHAR_INTERVAL = 300; // 1文字ずつ: 0.3秒 (300ms)
+    const STEP_WAIT = 1000;    // 改行・複製・両辺変形・分数化など各ステップ間の待機: 1.0秒 (1000ms)
 
     /* ==========================================================
-       Web Audio API によるリアルタイム効果音生成（外部ファイル一切不要）
+       Web Audio API によるリアルタイム効果音生成 (iOS/Mac Safari完全対応)
        ========================================================== */
     let audioCtx = null;
+    let audioUnlocked = false;
 
-    function getAudioContext() {
+    // ユーザー操作時に即座にAudioContextをアンロック
+    function unlockAudioContext() {
       if (!audioCtx) {
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
         if (AudioContextClass) {
@@ -373,13 +441,26 @@
       if (audioCtx && audioCtx.state === 'suspended') {
         audioCtx.resume();
       }
+      if (audioCtx && !audioUnlocked) {
+        // iOS Safari対策: 1サンプルの無音バッファを再生して完全にロック解除
+        try {
+          const buffer = audioCtx.createBuffer(1, 1, 22050);
+          const source = audioCtx.createBufferSource();
+          source.buffer = buffer;
+          source.connect(audioCtx.destination);
+          source.start(0);
+          audioUnlocked = true;
+        } catch (e) {
+          console.warn('Audio unlock warning:', e);
+        }
+      }
       return audioCtx;
     }
 
     function playSfx(type) {
       if (!state.soundEnabled) return;
       try {
-        const ctx = getAudioContext();
+        const ctx = unlockAudioContext();
         if (!ctx) return;
         const now = ctx.currentTime;
 
@@ -389,7 +470,7 @@
           osc.type = 'sine';
           osc.frequency.setValueAtTime(440, now);
           osc.frequency.exponentialRampToValueAtTime(750, now + 0.04);
-          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.setValueAtTime(0.15, now);
           gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
           osc.connect(gain);
           gain.connect(ctx.destination);
@@ -397,51 +478,89 @@
           osc.stop(now + 0.05);
 
         } else if (type === 'char') {
-          // 1文字ごとの心地よいポコッという出現音
+          // 1文字ごとのポコッという出現音
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'triangle';
           osc.frequency.setValueAtTime(659.25, now);
-          osc.frequency.exponentialRampToValueAtTime(880, now + 0.05);
-          gain.gain.setValueAtTime(0.16, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+          osc.frequency.exponentialRampToValueAtTime(920, now + 0.05);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
           osc.connect(gain);
           gain.connect(ctx.destination);
           osc.start(now);
-          osc.stop(now + 0.07);
+          osc.stop(now + 0.08);
 
-        } else if (type === 'transpose') {
-          // 移項のシュッとした音
+        } else if (type === 'duplicate') {
+          // 複製のシュッとした音
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.exponentialRampToValueAtTime(784, now + 0.1);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.12);
+
+        } else if (type === 'addBoth') {
+          // 両辺に同時追加のピロリン♪
+          [784, 1046.5].forEach((f, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(f, now + i * 0.06);
+            gain.gain.setValueAtTime(0.2, now + i * 0.06);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.12);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + i * 0.06);
+            osc.stop(now + i * 0.06 + 0.12);
+          });
+
+        } else if (type === 'cancel') {
+          // 打ち消し消去のシュンッ
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(320, now);
-          osc.frequency.exponentialRampToValueAtTime(760, now + 0.12);
-          gain.gain.setValueAtTime(0.15, now);
+          osc.frequency.setValueAtTime(600, now);
+          osc.frequency.exponentialRampToValueAtTime(150, now + 0.15);
+          gain.gain.setValueAtTime(0.16, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.16);
+
+        } else if (type === 'fraction') {
+          // 横棒と分母の出現音
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(587.33, now);
+          osc.frequency.exponentialRampToValueAtTime(987.77, now + 0.12);
+          gain.gain.setValueAtTime(0.2, now);
           gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
           osc.connect(gain);
           gain.connect(ctx.destination);
           osc.start(now);
           osc.stop(now + 0.14);
 
-        } else if (type === 'fraction') {
-          // 教科書スタイルの上下分数出現音
-          const osc1 = ctx.createOscillator();
-          const osc2 = ctx.createOscillator();
+        } else if (type === 'swap') {
+          // 左右入れ替えのクルッ音
+          const osc = ctx.createOscillator();
           const gain = ctx.createGain();
-          osc1.type = 'sine';
-          osc2.type = 'sine';
-          osc1.frequency.setValueAtTime(587.33, now);
-          osc2.frequency.setValueAtTime(880.00, now + 0.05);
-          gain.gain.setValueAtTime(0.15, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
-          osc1.connect(gain);
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+          osc.connect(gain);
           gain.connect(ctx.destination);
-          osc2.connect(gain);
-          osc1.start(now);
-          osc1.stop(now + 0.16);
-          osc2.start(now + 0.05);
-          osc2.stop(now + 0.16);
+          osc.start(now);
+          osc.stop(now + 0.14);
 
         } else if (type === 'fanfare') {
           const freqs = [523.25, 659.25, 783.99, 1046.50];
@@ -449,14 +568,14 @@
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             osc.type = 'sine';
-            const startTime = now + idx * 0.06;
+            const startTime = now + idx * 0.08;
             osc.frequency.setValueAtTime(freq, startTime);
-            gain.gain.setValueAtTime(0.15, startTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.22);
+            gain.gain.setValueAtTime(0.2, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.28);
             osc.connect(gain);
             gain.connect(ctx.destination);
             osc.start(startTime);
-            osc.stop(startTime + 0.23);
+            osc.stop(startTime + 0.29);
           });
 
         } else if (type === 'plot') {
@@ -464,13 +583,13 @@
           const gain = ctx.createGain();
           osc.type = 'triangle';
           osc.frequency.setValueAtTime(880, now);
-          osc.frequency.exponentialRampToValueAtTime(440, now + 0.14);
-          gain.gain.setValueAtTime(0.2, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+          osc.frequency.exponentialRampToValueAtTime(392, now + 0.16);
+          gain.gain.setValueAtTime(0.22, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
           osc.connect(gain);
           gain.connect(ctx.destination);
           osc.start(now);
-          osc.stop(now + 0.18);
+          osc.stop(now + 0.2);
         }
       } catch (err) {
         console.warn('Audio play error:', err);
@@ -518,7 +637,6 @@
     let canvasHeight = 300;
     let plotBounceScale = 1;
 
-    // 最大公約数 (GCD)
     function gcd(a, b) {
       a = Math.abs(a);
       b = Math.abs(b);
@@ -530,18 +648,17 @@
       return a;
     }
 
-    // 教科書スタイルの上下分数HTML生成（スラッシュは絶対不使用）
+    // 教科書スタイルの上下分数HTML（スラッシュ / は不使用）
     function createFractionHTML(numContent, denContent, extraClasses = '') {
       return `
         <span class="math-frac ${extraClasses}">
           <span class="num">${numContent}</span>
-          <span class="bar"></span>
+          <span class="bar anim-bar-grow"></span>
           <span class="den">${denContent}</span>
         </span>
       `;
     }
 
-    // 約分結果を返す（整数または上下の分数HTML）
     function simplifyFraction(num, den) {
       if (den === 0) return { isInteger: true, value: 0, html: '0' };
       if (num === 0) return { isInteger: true, value: 0, html: '0' };
@@ -565,7 +682,6 @@
       }
     }
 
-    // ユーティリティ: 指定ミリ秒待機するプロミス
     function sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
@@ -581,16 +697,14 @@
       });
     }
 
-    // 新しい文字・行が追加されたときに最下部へ自動スクロール
     function scrollStepsToBottom() {
       if (!stepsContainer) return;
       stepsContainer.scrollTop = stepsContainer.scrollHeight;
     }
 
-    // 累積コンテナへ行枠を作成して追加する
     function createStepRow(badgeText = '', badgeColor = 'bg-slate-800 text-slate-300 border-slate-700') {
       const row = document.createElement('div');
-      row.className = 'anim-row-enter flex flex-col gap-1 p-2 rounded-xl bg-slate-900/80 border border-slate-800/90 shadow-sm shrink-0';
+      row.className = 'anim-row-drop flex flex-col gap-1 p-2 rounded-xl bg-slate-900/80 border border-slate-800/90 shadow-sm shrink-0';
 
       let badgeHtml = '';
       if (badgeText) {
@@ -613,13 +727,14 @@
       return row.querySelector('.char-target');
     }
 
-    // ★重要要件：1文字・記号・パーツずつ0.3秒おきに出現させる非同期関数
+    // 1文字・記号ずつ0.3秒おきに出現させるタイピング関数
     async function typeTokensIntoTarget(targetEl, tokens, animId, sfxType = 'char') {
       for (const item of tokens) {
-        if (state.currentAnimationId !== animId) return false; // 中断確認
+        if (state.currentAnimationId !== animId) return false;
 
         const span = document.createElement('span');
         span.className = `anim-char-pop ${item.cls || 'text-slate-100 text-lg font-bold'}`;
+        if (item.id) span.id = item.id;
         if (item.html) {
           span.innerHTML = item.html;
         } else {
@@ -629,7 +744,7 @@
         scrollStepsToBottom();
 
         playSfx(item.sfx || sfxType);
-        await sleep(CHAR_INTERVAL); // 0.3秒おき
+        await sleep(CHAR_INTERVAL); // 0.3秒
       }
       return true;
     }
@@ -747,7 +862,7 @@
         ctx.stroke();
       }
 
-      // 点 (x, y) の描画（xが分数の場合も実数値で滑らかにプロット）
+      // 点 (x, y) の描画
       const numX = typeof state.x === 'number' ? state.x : (state.xFraction ? state.xFraction.value : 0);
       const numY = state.y;
       const pCurrent = mathToPixel(numX, numY);
@@ -820,17 +935,14 @@
 
     /* ==========================================================
        【x を代入した場合】
-       全行・1文字ずつ0.3秒おきに出現し、履歴を消さずに累積スクロール
+       1文字0.3秒、各ステップ間に1秒（1000ms）待機
        ========================================================== */
     async function runSubstitutionForX(newX) {
       const animId = ++state.currentAnimationId;
       state.x = newX;
       state.xFraction = null;
 
-      // 新しい計算開始時に枠をクリア
       stepsContainer.innerHTML = '';
-
-      // 基本形スロット更新
       valX.textContent = state.x;
       valY.textContent = '？';
       slotX.classList.remove('anim-bounce');
@@ -839,7 +951,7 @@
 
       animStatusBadge.textContent = 'x を代入中...';
       animStatusBadge.className = 'text-[11px] text-emerald-300 bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-600 font-mono animate-pulse';
-      coachMessage.textContent = `💡 ステップ①「x の場所に ${newX} をスポッと代入します」`;
+      coachMessage.textContent = `💡 ステップ①「x に ${newX} を代入して計算します」`;
 
       const xDisplay = state.x < 0 ? `(${state.x})` : `${state.x}`;
       const aDisplay = state.a < 0 ? `(${state.a})` : `${state.a}`;
@@ -849,7 +961,7 @@
       updateStepIndicator(1);
       coordBadge.textContent = `x=${state.x} を代入中...`;
 
-      // [行1] 代入式: y = a × x + b (1文字ずつ0.3秒)
+      // [行1] 代入式: y = a × x + b (1文字0.3秒)
       const target1 = createStepRow('ステップ① 式に代入 (1文字0.3秒)', 'bg-emerald-950/80 text-emerald-300 border-emerald-600');
       const tokens1 = [
         { text: 'y', cls: 'text-purple-300 text-xl font-bold' },
@@ -863,10 +975,12 @@
 
       const ok1 = await typeTokensIntoTarget(target1, tokens1, animId, 'char');
       if (!ok1) return;
-      await sleep(LINE_PAUSE);
+
+      // 【1秒待機】
+      await sleep(STEP_WAIT);
       if (state.currentAnimationId !== animId) return;
 
-      // [行2] 掛け算を先に計算 (1文字ずつ0.3秒)
+      // [行2] 掛け算を先に計算 (1文字0.3秒)
       const multResult = state.a * state.x;
       updateStepIndicator(2);
       coachMessage.textContent = `💡 ステップ②「まず掛け算 (${state.a} × ${state.x} = ${multResult}) を計算！」`;
@@ -881,10 +995,12 @@
 
       const ok2 = await typeTokensIntoTarget(target2, tokens2, animId, 'char');
       if (!ok2) return;
-      await sleep(LINE_PAUSE);
+
+      // 【1秒待機】
+      await sleep(STEP_WAIT);
       if (state.currentAnimationId !== animId) return;
 
-      // [行3] 足し算して答え確定 (1文字ずつ0.3秒)
+      // [行3] 足し算して答え確定
       state.y = multResult + state.b;
       updateStepIndicator(3);
       coachMessage.textContent = `💡 ステップ③「たし算をして y = ${state.y} が求まりました！」`;
@@ -908,34 +1024,41 @@
       animStatusBadge.className = 'text-[11px] text-emerald-300 bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-600 font-mono';
       playSfx('fanfare');
 
-      await sleep(LINE_PAUSE);
+      // 【1秒待機】
+      await sleep(STEP_WAIT);
       if (state.currentAnimationId !== animId) return;
 
-      // [行4] グラフ反映
       updateStepIndicator(4);
       updateGraphAndCoordinates();
       playSfx('plot');
       animatePlotLanding();
 
       const target4 = createStepRow('ステップ④ グラフ反映', 'bg-emerald-950/80 text-emerald-300 border-emerald-600');
-      const tokens4 = [
+      await typeTokensIntoTarget(target4, [
         { text: `📍 グラフ上の点 (${state.x}, ${state.y}) にプロット着地！`, cls: 'text-emerald-300 font-bold text-sm' }
-      ];
-      await typeTokensIntoTarget(target4, tokens4, animId, 'char');
+      ], animId, 'char');
     }
 
     /* ==========================================================
        【y を代入した場合】
-       完全「1文字ずつ0.3秒おき」・履歴累積・教科書スタイル縦型分数（スラッシュ不使用）
+       等式の性質に基づくアニメーション（指定タイミング）：
+       1. 式 5 = 2x + 1 を1文字0.3秒ずつ表示 【表示後 1秒待機】
+       2. その式を下に複製 【複製後 1秒待機】
+       3. 複製行の両辺に同時に -1 を追加 【追加後 1秒待機】
+       4. 右辺の +1-1 が消えて 5-1=2x だけ残す 【消去後 1秒待機】
+       5. その下に 4 = 2x を1文字0.3秒ずつ表示 【表示後 1秒待機】
+       6. それを下に複製 【複製後 1秒待機】
+       7. 両辺をそれぞれ同時に 1/2（分数横棒＋下に2） 【分数化後 1秒待機】
+       8. 1文字0.3秒ずつ 2 = x と表示 【表示後 1秒待機】
+       9. 左右入れ替えて x = 2 で完成！【ファンファーレ音】
+       10. 1秒待ってグラフの点へ着地アニメーション
        ========================================================== */
     async function runEquationStepsForY(newY) {
       const animId = ++state.currentAnimationId;
       state.y = newY;
 
-      // 前回の計算をクリアして最初から累積開始
       stepsContainer.innerHTML = '';
 
-      // 基本形スロット更新
       valY.textContent = state.y;
       valX.textContent = '？';
       slotY.classList.remove('anim-bounce');
@@ -945,7 +1068,6 @@
       animStatusBadge.textContent = '方程式の解法を開始...';
       animStatusBadge.className = 'text-[11px] text-purple-300 bg-purple-950/80 px-2.5 py-0.5 rounded-full border border-purple-600 font-mono animate-pulse';
 
-      // 傾き a が 0 の例外ガード
       if (state.a === 0) {
         const errTarget = createStepRow('エラー', 'bg-rose-950/80 text-rose-300 border-rose-600');
         await typeTokensIntoTarget(errTarget, [
@@ -954,7 +1076,7 @@
         return;
       }
 
-      coachMessage.textContent = `💡 ステップ①「y に ${newY} を代入して方程式をつくります！」`;
+      coachMessage.textContent = `💡 ①「y に ${newY} を代入して方程式をつくります！」`;
       coordBadge.textContent = `y=${state.y} から x を逆算中...`;
       updateStepIndicator(1);
 
@@ -962,134 +1084,246 @@
       const bAbs = Math.abs(state.b).toString();
       const aDisplay = state.a === 1 ? '' : (state.a === -1 ? '−' : `${state.a}`);
 
-      // 【ステップ① 代入】1文字ずつ0.3秒おきに出現
-      const target1 = createStepRow('ステップ① y に代入 (1文字0.3秒)', 'bg-purple-950/80 text-purple-300 border-purple-600');
+      // -------------------------------------------------------------
+      // ① 「5 = 2x + 1」を1文字ずつ0.3秒おきに表示
+      // -------------------------------------------------------------
+      const target1 = createStepRow('① 式に代入 (1文字0.3秒)', 'bg-purple-950/80 text-purple-300 border-purple-600');
       const tokens1 = [
         { text: `${state.y}`, cls: 'text-purple-300 text-xl font-black bg-purple-900/80 px-2 py-0.5 rounded border border-purple-400 shadow-sm' },
         { text: '=', cls: 'text-slate-400 text-xl font-black' },
         { text: `${aDisplay}`, cls: 'text-rose-300 text-xl font-bold' },
-        { text: 'x', cls: 'text-emerald-400 text-xl font-black' },
-        { text: bSign, cls: 'text-slate-400 text-xl font-black' },
-        { text: bAbs, cls: 'text-sky-300 text-xl font-bold' }
+        { text: 'x', cls: 'text-emerald-400 text-xl font-black' }
       ];
+
+      if (state.b !== 0) {
+        tokens1.push({ text: bSign, cls: 'text-slate-400 text-xl font-black' });
+        tokens1.push({ text: bAbs, cls: 'text-sky-300 text-xl font-bold' });
+      }
 
       const ok1 = await typeTokensIntoTarget(target1, tokens1, animId, 'char');
       if (!ok1) return;
-      await sleep(LINE_PAUSE);
+
+      // 【表示し終えたあと 1秒待機】
+      await sleep(STEP_WAIT);
       if (state.currentAnimationId !== animId) return;
 
-      // 【ステップ② 移項】定数項を反対側に移項（1文字ずつ0.3秒おき）
-      updateStepIndicator(2);
-      const transposedSign = state.b >= 0 ? '−' : '+';
-      coachMessage.textContent = `💡 ステップ②「定数項 (${state.b >= 0 ? '+' : '−'}${bAbs}) を反対側に移項！符号が (${transposedSign}${bAbs}) に変わるよ」`;
+      // 切片 b がある場合の等式の性質（両辺から引く・足す）
+      if (state.b !== 0) {
+        // -------------------------------------------------------------
+        // ② 1秒後に、その式を下に「複製」
+        // -------------------------------------------------------------
+        playSfx('duplicate');
+        const target2 = createStepRow('② 式を複製 → 両辺から同じ数を引く準備', 'bg-indigo-950/80 text-indigo-300 border-indigo-600');
 
-      const target2 = createStepRow(`ステップ② 定数項 ${state.b >= 0 ? '+' : '−'}${bAbs} を移項`, 'bg-amber-950/80 text-amber-300 border-amber-600');
-      const tokens2 = [
-        { text: `${state.y}`, cls: 'text-purple-300 text-xl font-bold' },
-        { text: `${transposedSign}`, cls: 'text-amber-300 text-xl font-black bg-amber-900/90 px-1.5 py-0.5 rounded-l border-y border-l border-amber-500 shadow-sm', sfx: 'transpose' },
-        { text: `${bAbs}`, cls: 'text-amber-300 text-xl font-black bg-amber-900/90 px-1.5 py-0.5 rounded-r border-y border-r border-amber-500 shadow-sm', sfx: 'transpose' },
+        target2.innerHTML = `
+          <span class="text-purple-300 text-xl font-bold">${state.y}</span>
+          <span class="text-slate-400 text-xl font-black">=</span>
+          <span class="text-rose-300 text-xl font-bold">${aDisplay}</span>
+          <span class="text-emerald-400 text-xl font-black">x</span>
+          <span id="rightBSign" class="text-slate-400 text-xl font-black">${bSign}</span>
+          <span id="rightBVal" class="text-sky-300 text-xl font-bold">${bAbs}</span>
+        `;
+        scrollStepsToBottom();
+
+        // 【複製後 1秒待機】
+        await sleep(STEP_WAIT);
+        if (state.currentAnimationId !== animId) return;
+
+        // -------------------------------------------------------------
+        // ③ さらに1秒後、その複製行の両辺に「同時に -1 を追加」
+        // -------------------------------------------------------------
+        updateStepIndicator(2);
+        const subSign = state.b >= 0 ? '−' : '+';
+        coachMessage.textContent = `💡 ③「等式の性質：両辺に同時に ${subSign}${bAbs} を追加します！」`;
+        playSfx('addBoth');
+
+        // 左辺の y の直後に -1 バッジを挿入
+        const leftYSpan = target2.children[0];
+        const leftAddedBadge = document.createElement('span');
+        leftAddedBadge.className = 'anim-add-badge text-amber-300 text-xl font-black bg-amber-900/90 px-2 py-0.5 rounded border border-amber-400 shadow-sm';
+        leftAddedBadge.textContent = `${subSign}${bAbs}`;
+        leftYSpan.after(leftAddedBadge);
+
+        // 右辺の末尾に -1 バッジを追加
+        const rightAddedBadge = document.createElement('span');
+        rightAddedBadge.id = 'rightAddedPart';
+        rightAddedBadge.className = 'anim-add-badge text-amber-300 text-xl font-black bg-amber-900/90 px-2 py-0.5 rounded border border-amber-400 shadow-sm';
+        rightAddedBadge.textContent = `${subSign}${bAbs}`;
+        target2.appendChild(rightAddedBadge);
+        scrollStepsToBottom();
+
+        // 【追加後 1秒待機】
+        await sleep(STEP_WAIT);
+        if (state.currentAnimationId !== animId) return;
+
+        // -------------------------------------------------------------
+        // ④ その1秒後に、右辺の「+1-1」が消えて「5-1=2x」だけ残す
+        // -------------------------------------------------------------
+        coachMessage.textContent = `💡 ④「右辺の ${bSign}${bAbs} と ${subSign}${bAbs} は打ち消し合って 0 になるので消えます！」`;
+        playSfx('cancel');
+
+        const rightBSign = target2.querySelector('#rightBSign');
+        const rightBVal = target2.querySelector('#rightBVal');
+        const rightAdded = target2.querySelector('#rightAddedPart');
+
+        if (rightBSign) rightBSign.classList.add('anim-vanish');
+        if (rightBVal) rightBVal.classList.add('anim-vanish');
+        if (rightAdded) rightAdded.classList.add('anim-vanish');
+
+        // アニメーション完了後にDOMから完全除去して「5 - 1 = 2x」だけ残す
+        await sleep(260);
+        if (rightBSign && rightBSign.parentNode) rightBSign.remove();
+        if (rightBVal && rightBVal.parentNode) rightBVal.remove();
+        if (rightAdded && rightAdded.parentNode) rightAdded.remove();
+        scrollStepsToBottom();
+
+        // 【消去後 1秒待機】
+        await sleep(STEP_WAIT);
+        if (state.currentAnimationId !== animId) return;
+      }
+
+      // -------------------------------------------------------------
+      // ⑤ 改行して、その下に「4 = 2x」の式を1文字ずつ0.3秒おきに表示
+      // -------------------------------------------------------------
+      updateStepIndicator(3);
+      const calculatedLeft = state.y - state.b;
+      coachMessage.textContent = `💡 ⑤「左辺を計算して ${calculatedLeft} = ${aDisplay}x になります」`;
+
+      const target3 = createStepRow(`⑤ 左辺を計算 (${state.y} ${state.b >= 0 ? '−' : '+'} ${bAbs} = ${calculatedLeft})`, 'bg-indigo-950/80 text-indigo-300 border-indigo-600');
+      const tokens3 = [
+        { text: `${calculatedLeft}`, cls: 'text-indigo-200 text-xl font-black bg-indigo-950/90 px-2 py-0.5 rounded border border-indigo-500' },
         { text: '=', cls: 'text-slate-400 text-xl font-black' },
         { text: `${aDisplay}`, cls: 'text-rose-300 text-xl font-bold' },
-        { text: 'x', cls: 'text-emerald-300 text-xl font-bold' }
-      ];
-
-      const ok2 = await typeTokensIntoTarget(target2, tokens2, animId, 'char');
-      if (!ok2) return;
-      await sleep(LINE_PAUSE);
-      if (state.currentAnimationId !== animId) return;
-
-      // 【ステップ③ 整理】左辺を計算して x の項を左辺へ（1文字ずつ0.3秒おき）
-      updateStepIndicator(3);
-      const subtractedVal = state.y - state.b;
-      const axPart = `${state.a === 1 ? '' : (state.a === -1 ? '−' : state.a)}x`;
-      coachMessage.textContent = `💡 ステップ③「計算して整理！ (${state.y} ${state.b >= 0 ? '−' : '+'} ${bAbs} = ${subtractedVal})」`;
-
-      const target3 = createStepRow('ステップ③ 計算して x の項を左辺へ', 'bg-indigo-950/80 text-indigo-300 border-indigo-600');
-      const tokens3 = [
-        { text: `${subtractedVal}`, cls: 'text-indigo-200 text-lg font-bold bg-slate-800 px-2 py-0.5 rounded border border-slate-700' },
-        { text: '=', cls: 'text-slate-400 text-lg font-black' },
-        { text: `${axPart}`, cls: 'text-emerald-300 text-lg font-bold' },
-        { text: '→', cls: 'text-slate-400 text-lg font-black' },
-        { text: `${axPart}`, cls: 'text-emerald-300 text-xl font-bold bg-emerald-950/80 px-2.5 py-0.5 rounded border border-emerald-600' },
-        { text: '=', cls: 'text-slate-400 text-xl font-black' },
-        { text: `${subtractedVal}`, cls: 'text-indigo-200 text-xl font-bold' }
+        { text: 'x', cls: 'text-emerald-400 text-xl font-black' }
       ];
 
       const ok3 = await typeTokensIntoTarget(target3, tokens3, animId, 'char');
       if (!ok3) return;
-      await sleep(LINE_PAUSE);
+
+      // 【4 = 2x を表示し終えたあと 1秒待機】
+      await sleep(STEP_WAIT);
       if (state.currentAnimationId !== animId) return;
 
-      // 【ステップ④ 教科書スタイルの上下分数で割る（スラッシュ絶対不使用）】
+      // -------------------------------------------------------------
+      // ⑥ それを下に複製
+      // -------------------------------------------------------------
+      playSfx('duplicate');
+      const target4 = createStepRow(`⑥ 式を複製 → 両辺を ${state.a} で割る準備`, 'bg-sky-950/80 text-sky-300 border-sky-600');
+
+      target4.innerHTML = `
+        <span id="fracLeftNum" class="text-indigo-200 text-xl font-black">${calculatedLeft}</span>
+        <span class="text-slate-400 text-xl font-black">=</span>
+        <span id="fracRightNum" class="text-emerald-300 text-xl font-bold">${aDisplay}x</span>
+      `;
+      scrollStepsToBottom();
+
+      // 【複製後 1秒待機】
+      await sleep(STEP_WAIT);
+      if (state.currentAnimationId !== animId) return;
+
+      // -------------------------------------------------------------
+      // ⑦ さらに1秒後、両辺をそれぞれ同時に 1/2（横棒を引いて下に2を表示）
+      // -------------------------------------------------------------
       updateStepIndicator(4);
-      coachMessage.textContent = `💡 ステップ④「両辺を x の前の数 (${state.a}) で割ります（教科書スタイルの上下の分数！）」`;
+      coachMessage.textContent = `💡 ⑦「等式の性質：両辺を同時に x の係数 (${state.a}) で割ります！」`;
+      playSfx('fraction');
 
-      const leftFracHtml = createFractionHTML(`<span class="text-emerald-300">${state.a}x</span>`, `<span class="text-rose-300">${state.a}</span>`, 'text-lg sm:text-xl text-slate-100');
-      const rightFracHtml = createFractionHTML(`<span class="text-indigo-200">${subtractedVal}</span>`, `<span class="text-rose-300">${state.a}</span>`, 'text-lg sm:text-xl text-slate-100');
+      // 教科書スタイルの上下分数に瞬時に置換
+      const leftFracHtml = createFractionHTML(
+        `<span class="text-indigo-200">${calculatedLeft}</span>`,
+        `<span class="text-rose-300">${state.a}</span>`,
+        'text-xl text-slate-100 bg-slate-950/80 px-2.5 py-1 rounded-xl border border-indigo-500/60 shadow-sm'
+      );
+      const rightFracHtml = createFractionHTML(
+        `<span class="text-emerald-300">${aDisplay}x</span>`,
+        `<span class="text-rose-300">${state.a}</span>`,
+        'text-xl text-slate-100 bg-slate-950/80 px-2.5 py-1 rounded-xl border border-indigo-500/60 shadow-sm'
+      );
 
-      const target4 = createStepRow(`ステップ④ 両辺を ${state.a} で割る (分数形式)`, 'bg-sky-950/80 text-sky-300 border-sky-600');
-      const tokens4 = [
-        { html: leftFracHtml, cls: 'bg-slate-950/70 px-2 py-1 rounded-xl border border-indigo-500/50', sfx: 'fraction' },
-        { text: '=', cls: 'text-slate-300 text-2xl font-black' },
-        { html: rightFracHtml, cls: 'bg-slate-950/70 px-2 py-1 rounded-xl border border-indigo-500/50', sfx: 'fraction' }
-      ];
+      target4.innerHTML = `
+        ${leftFracHtml}
+        <span class="text-slate-300 text-2xl font-black">=</span>
+        ${rightFracHtml}
+      `;
+      scrollStepsToBottom();
 
-      const ok4 = await typeTokensIntoTarget(target4, tokens4, animId, 'fraction');
-      if (!ok4) return;
-      await sleep(LINE_PAUSE);
+      // 【分数化後 1秒待機】
+      await sleep(STEP_WAIT);
       if (state.currentAnimationId !== animId) return;
 
-      // 【ステップ⑤ 約分・解の確定】1文字ずつ0.3秒おき
+      // -------------------------------------------------------------
+      // ⑧ 改行して、1文字0.3秒ずつ「2 = x」と表示
+      // -------------------------------------------------------------
       updateStepIndicator(5);
-      const fractionResult = simplifyFraction(subtractedVal, state.a);
+      const fractionResult = simplifyFraction(calculatedLeft, state.a);
       state.xFraction = fractionResult;
       state.x = fractionResult.value;
-      coachMessage.textContent = `💡 ステップ⑤「約分して x の解が求まりました！大正解！」`;
 
-      const target5 = createStepRow('ステップ⑤ 解が確定！', 'bg-amber-950/80 text-amber-300 border-amber-500');
-      const tokens5 = [
-        { text: '→', cls: 'text-slate-400 text-xl font-black' },
-        { text: 'x', cls: 'text-emerald-400 text-2xl font-black' },
-        { text: '=', cls: 'text-slate-300 text-2xl font-black' }
-      ];
+      coachMessage.textContent = `💡 ⑧「約分して解を求めます！」`;
+
+      const target5 = createStepRow('⑧ 約分して計算 (1文字0.3秒)', 'bg-indigo-950/80 text-indigo-300 border-indigo-600');
+      const tokens5 = [];
 
       if (fractionResult.isInteger) {
-        tokens5.push({ text: `${fractionResult.value}`, cls: 'text-amber-300 text-2xl font-black bg-amber-950/90 px-3 py-0.5 rounded-lg border border-amber-400 shadow-md' });
+        tokens5.push({ text: `${fractionResult.value}`, cls: 'text-amber-300 text-2xl font-black bg-amber-950/90 px-2.5 py-0.5 rounded border border-amber-400' });
       } else {
-        tokens5.push({ html: fractionResult.html, cls: 'text-amber-300 text-2xl font-black bg-amber-950/90 px-3 py-0.5 rounded-lg border border-amber-400 shadow-md' });
+        tokens5.push({ html: fractionResult.html, cls: 'text-amber-300 text-2xl font-black bg-amber-950/90 px-2.5 py-0.5 rounded border border-amber-400' });
       }
+
+      tokens5.push({ text: '=', cls: 'text-slate-400 text-2xl font-black' });
+      tokens5.push({ text: 'x', cls: 'text-emerald-400 text-2xl font-black' });
 
       const ok5 = await typeTokensIntoTarget(target5, tokens5, animId, 'char');
       if (!ok5) return;
 
-      valX.innerHTML = fractionResult.html;
+      // 【2 = x 表示後 1秒待機】
+      await sleep(STEP_WAIT);
+      if (state.currentAnimationId !== animId) return;
+
+      // -------------------------------------------------------------
+      // ⑨ それを左右入れ替えて「x = 2」にして完成！
+      // -------------------------------------------------------------
+      updateStepIndicator(6);
+      coachMessage.textContent = `💡 ⑨「左右を入れ替えて x = ${fractionResult.isInteger ? fractionResult.value : ''} の形にして完成！」`;
+      playSfx('swap');
+
+      const target6 = createStepRow('⑨ 左右を入れ替えて完成！', 'bg-amber-950/80 text-amber-300 border-amber-500');
+      target6.classList.add('anim-swap');
+
+      const valHtml = fractionResult.isInteger ? `${fractionResult.value}` : fractionResult.html;
+      target6.innerHTML = `
+        <span class="text-emerald-400 text-2xl font-black">x</span>
+        <span class="text-slate-300 text-2xl font-black">=</span>
+        <span class="text-amber-300 text-2xl font-black bg-amber-950/90 px-3 py-0.5 rounded-lg border border-amber-400 shadow-md">${valHtml}</span>
+      `;
+      scrollStepsToBottom();
+
+      // 基本形スロットの x を更新して跳ねる
+      valX.innerHTML = valHtml;
       slotX.classList.remove('anim-bounce');
       void slotX.offsetWidth;
       slotX.classList.add('anim-bounce');
 
-      animStatusBadge.textContent = '解が確定！';
+      animStatusBadge.textContent = '解が完成！';
       animStatusBadge.className = 'text-[11px] text-emerald-300 bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-600 font-mono';
       playSfx('fanfare');
 
-      await sleep(LINE_PAUSE);
+      // 【完成後 1秒待機してグラフへ反映】
+      await sleep(STEP_WAIT);
       if (state.currentAnimationId !== animId) return;
 
-      // 【ステップ⑥ グラフへの反映・プロット】
-      updateStepIndicator(6);
       updateGraphAndCoordinates();
       playSfx('plot');
       animatePlotLanding();
-      animStatusBadge.textContent = '完了 (点線ガイド表示)';
 
       const displayCoordX = state.xFraction && !state.xFraction.isInteger
         ? `${state.xFraction.num}/${state.xFraction.den}`
         : `${state.x}`;
 
-      const target6 = createStepRow('ステップ⑥ グラフ反映', 'bg-emerald-950/80 text-emerald-300 border-emerald-600');
-      const tokens6 = [
+      const target7 = createStepRow('⑩ グラフ反映', 'bg-emerald-950/80 text-emerald-300 border-emerald-600');
+      await typeTokensIntoTarget(target7, [
         { text: `📍 グラフ上の点 (${displayCoordX}, ${state.y}) にプロット着地！`, cls: 'text-emerald-300 font-bold text-sm' }
-      ];
-      await typeTokensIntoTarget(target6, tokens6, animId, 'char');
+      ], animId, 'char');
     }
 
     function updateParameters() {
@@ -1103,7 +1337,6 @@
       updateGraphAndCoordinates();
       playSfx('tap');
 
-      // パラメータ変更時もスクロール枠に案内を記録
       stepsContainer.innerHTML = '';
       const target = createStepRow('式の更新', 'bg-indigo-950/80 text-indigo-300 border-indigo-600');
       const bSign = state.b >= 0 ? '+' : '−';
@@ -1115,7 +1348,6 @@
       state.activeTarget = target;
       playSfx('tap');
 
-      // スロットスタイルリセット
       Object.keys(slots).forEach(key => {
         slots[key].classList.remove('ring-4', 'ring-emerald-300', 'ring-purple-300', 'ring-rose-300', 'ring-sky-300', 'border-emerald-500', 'border-purple-500', 'border-rose-500', 'border-sky-500');
         slots[key].classList.add(
@@ -1133,7 +1365,7 @@
       } else if (target === 'y') {
         slots.y.classList.remove('border-purple-300');
         slots.y.classList.add('ring-4', 'ring-purple-300', 'border-purple-500');
-        activeSlotBadge.textContent = 'y に数字を代入 (方程式を解く)';
+        activeSlotBadge.textContent = 'y に代入 (等式の性質で解く)';
         activeSlotBadge.className = 'bg-purple-100 text-purple-800 text-xs font-bold px-2.5 py-0.5 rounded-full border border-purple-300';
       } else if (target === 'a') {
         slots.a.classList.remove('border-rose-300');
@@ -1148,17 +1380,16 @@
       }
     }
 
-    // スロットクリック
     Object.keys(slots).forEach(key => {
       slots[key].addEventListener('click', () => {
-        getAudioContext();
+        unlockAudioContext();
         setActiveTarget(key);
       });
     });
 
-    // 符号ボタン
+    // 符号切り替えボタン
     signPlus.addEventListener('click', () => {
-      getAudioContext();
+      unlockAudioContext();
       state.isNegative = false;
       signPlus.className = 'sign-btn px-3 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm font-black transition bg-white shadow-sm text-indigo-600';
       signMinus.className = 'sign-btn px-3 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm font-black transition text-slate-500 hover:text-slate-800';
@@ -1166,23 +1397,21 @@
     });
 
     signMinus.addEventListener('click', () => {
-      getAudioContext();
+      unlockAudioContext();
       state.isNegative = true;
       signMinus.className = 'sign-btn px-3 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm font-black transition bg-rose-500 text-white shadow-sm';
       signPlus.className = 'sign-btn px-3 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm font-black transition text-slate-500 hover:text-slate-800';
       playSfx('tap');
     });
 
-    // 0 ボタン
     btnZero.addEventListener('click', () => {
-      getAudioContext();
+      unlockAudioContext();
       handleNumberInput(0);
     });
 
-    // 1〜10 数字ボタン
     document.querySelectorAll('.num-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        getAudioContext();
+        unlockAudioContext();
         const baseNum = parseInt(btn.getAttribute('data-val'), 10);
         const inputNum = state.isNegative ? -baseNum : baseNum;
         handleNumberInput(inputNum);
@@ -1203,9 +1432,8 @@
       }
     }
 
-    // ランダムボタン
     randomBtn.addEventListener('click', () => {
-      getAudioContext();
+      unlockAudioContext();
       if (state.activeTarget === 'y') {
         const sampleYs = [-7, -5, -3, -1, 1, 3, 5, 7, 9];
         const randY = sampleYs[Math.floor(Math.random() * sampleYs.length)];
@@ -1221,9 +1449,8 @@
       }
     });
 
-    // リセットボタン
     resetBtn.addEventListener('click', () => {
-      getAudioContext();
+      unlockAudioContext();
       state.a = 2;
       state.b = 1;
       state.isNegative = false;
@@ -1233,14 +1460,13 @@
       runSubstitutionForX(2);
     });
 
-    // サウンドトグル
     soundToggleBtn.addEventListener('click', () => {
       state.soundEnabled = !state.soundEnabled;
       if (state.soundEnabled) {
         soundIcon.textContent = '🔊';
         soundText.textContent = '音: ON';
         soundToggleBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 text-xs font-bold border border-slate-300 hover:bg-slate-200 transition';
-        getAudioContext();
+        unlockAudioContext();
         playSfx('tap');
       } else {
         soundIcon.textContent = '🔇';
@@ -1274,7 +1500,7 @@
     }
 
     canvas.addEventListener('pointerdown', (e) => {
-      getAudioContext();
+      unlockAudioContext();
       const { px, py } = getCanvasCoordinates(e);
 
       if (checkHitCurrentPoint(px, py)) {
@@ -1341,6 +1567,7 @@
     canvas.addEventListener('pointerup', finishDrag);
     canvas.addEventListener('pointercancel', finishDrag);
 
+    // 画面初期化とイベント登録
     window.addEventListener('resize', resizeCanvas);
     window.addEventListener('DOMContentLoaded', () => {
       resizeCanvas();
@@ -1348,9 +1575,10 @@
       runSubstitutionForX(2);
     });
 
-    document.body.addEventListener('pointerdown', () => {
-      getAudioContext();
-    }, { once: true });
+    // ユーザーの最初の操作で即座にアンロック
+    document.addEventListener('pointerdown', unlockAudioContext, { once: true });
+    document.addEventListener('touchstart', unlockAudioContext, { once: true });
+    document.addEventListener('click', unlockAudioContext, { once: true });
   </script>
 </body>
 </html>
